@@ -4,21 +4,58 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Auth from "./components/Auth";
 import { Routes, Route, NavLink as Link } from "react-router-dom";
+import Login from "./components/Login";
+import Logout from "./components/Logout";
 
 function App() {
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("profile")) {
+      setShow(true);
+    }
+  }, []);
+
   const [details, setDetals] = useState([]);
 
   const getRequestHandler = async () => {
-    console.log("Get request handler");
+    const API = axios.create({ baseURL: "http://localhost:5000" });
+
+    API.interceptors.request.use((req) => {
+      if (localStorage.getItem("profile")) {
+        req.headers.authorization = `Bearer ${
+          JSON.parse(localStorage.getItem("profile")).res.tokenId
+        }`; // "Bearer sdfjasjasfjaf8a8sdf78as7f8a6sf6af6"
+      }
+      return req;
+    });
+
+    const response = await API.get("/getusers");
+    console.log(response);
+    setDetals(response.data.details);
   };
 
   const removeUser = async (id) => {
-    console.log("remove user");
+    const API = axios.create({ baseURL: "http://localhost:5000" });
+
+    API.interceptors.request.use((req) => {
+      if (localStorage.getItem("profile")) {
+        req.headers.authorization = `Bearer ${
+          JSON.parse(localStorage.getItem("profile")).res.tokenId
+        }`; // "Bearer sdfjasjasfjaf8a8sdf78as7f8a6sf6af6"
+      }
+      return req;
+    });
+
+    await API.delete(`/${id}`);
+    getRequestHandler();
   };
 
   return (
     <div className="App">
+      <Login setShow={setShow} />
+      <br />
+      <Logout setShow={setShow} setDetals={setDetals} />
       <nav>
         <div style={{ padding: "20px" }}>
           <Link to="/create-user">Creat User</Link>

@@ -4,6 +4,7 @@ import {
   getUsers,
   deleteUser,
 } from "../controllers/userController.js";
+import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 router.post("/create-user", createUser);
 
 //http://localhost:5000/getusers
-router.get("/getusers", getUsers);
+router.get("/getusers", auth, getUsers);
 
 //http://localhost:5000/62a86f7a3946776002ff1bf2
 router.delete("/:id", deleteUser);

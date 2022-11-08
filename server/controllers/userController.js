@@ -3,8 +3,10 @@ import userModel from "../models/userModel.js";
 export const getUsers = async (req, res) => {
   //code here
   try {
-    const users = await userModel.find();
-    res.status(200).json({ details: users });
+    if (req.googleId) {
+      const users = await userModel.find();
+      res.status(200).json({ details: users });
+    }
   } catch (error) {
     console.log(error.message);
   }
